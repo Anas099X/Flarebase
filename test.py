@@ -1,7 +1,14 @@
-from sqlmacro import SQLMacro
-from peewee_lite import *
-db = SimplePeeweeJSON("playful.sqlite")
-for key in db.fetch_keys():
-    print(key)
-    print(db.fetch(key).get('value'))
- 
+from tinydb import *
+from tinydb.storages import *
+
+db = TinyDB('playful.json')
+
+User = Query()
+
+table = db.table('ANAS099')
+
+table.insert({"name": "randomname"})
+
+
+print(db.table('Testtable').all())
+

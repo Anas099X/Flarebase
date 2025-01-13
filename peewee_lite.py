@@ -30,7 +30,7 @@ class SimplePeeweeJSON:
             self.JSONData.create(key=key, value=json.dumps(data))
             return {"status": "success", "message": f"Entry '{key}' created."}
         except IntegrityError:
-            return {"status": "error", "message": f"Key '{key}' already exists."}
+            return {"status": "error", "message": f"key '{key}' already exists."}
 
     def fetch(self, key=None):
         """Fetch JSON data. If no key is provided, fetch all data."""
@@ -39,7 +39,7 @@ class SimplePeeweeJSON:
             if entry:
                 return {"key": entry.key, "value": json.loads(entry.value)}
             else:
-                return {"status": "error", "message": f"Key '{key}' not found."}
+                return {"status": "error", "message": f"key '{key}' not found."}
         else:
             return [
                 {"key": entry.key, "value": json.loads(entry.value)}
@@ -58,7 +58,7 @@ class SimplePeeweeJSON:
             entry.save()
             return {"status": "success", "message": f"Entry '{key}' updated."}
         else:
-            return {"status": "error", "message": f"Key '{key}' not found."}
+            return {"status": "error", "message": f"key '{key}' not found."}
 
     def delete(self, key):
         """Delete a JSON entry."""
@@ -67,7 +67,7 @@ class SimplePeeweeJSON:
             entry.delete_instance()
             return {"status": "success", "message": f"Entry '{key}' deleted."}
         else:
-            return {"status": "error", "message": f"Key '{key}' not found."}
+            return {"status": "error", "message": f"key '{key}' not found."}
 
     def add(self, key, new_data):
         """Add an object or element to an existing JSON entry."""
@@ -91,4 +91,32 @@ class SimplePeeweeJSON:
             entry.save()
             return {"status": "success", "message": f"Data added to key '{key}'."}
         else:
-            return {"status": "error", "message": f"Key '{key}' not found."}
+            return {"status": "error", "message": f"key '{key}' not found."}
+
+    def modify(self, key, path, new_value):
+        """
+        Modify a specific value inside a JSON object or array.
+
+        :param key: The key of the entry to modify.
+        :param path: A list of keys or indices to traverse the JSON structure.
+        :param new_value: The new value to set at the specified path.
+        """
+        entry = self.JSONData.get_or_none(self.JSONData.key == key)
+        if entry:
+            current_data = json.loads(entry.value)
+
+            # Traverse the path and modify the value
+            temp = current_data
+            try:
+                for step in path[:-1]:  # Traverse all but the last step
+                    temp = temp[step]
+                temp[path[-1]] = new_value  # Modify the value at the last step
+            except (KeyError, IndexError, TypeError) as e:
+                return {"status": "error", "message": f"Invalid path: {e}"}
+
+            # Save the updated JSON back to the database
+            entry.value = json.dumps(current_data)
+            entry.save()
+            return {"status": "success", "message": f"Value at path {path} modified."}
+        else:
+            return {"status": "error", "message": f"key '{key}' not found."}
