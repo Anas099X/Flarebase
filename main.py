@@ -20,44 +20,44 @@ def get():
             Div(
                 Label(cls="drawer-overlay", **{"for": "add-key-drawer"}),
                 Div(
-                    H3("Add New Table", cls="text-lg font-bold flex justify-center"),
+                    H3("Add New Table", cls="text-xl font-bold flex justify-center"),
                     Form(
                         Div(
                             Div(
-                                Label("Table Name:", cls="label"),
+                                Label("Table Name:", cls="text-lg font-bold label"),
                                 Input(
                                     type="text",
                                     name="table-name",
                                     placeholder="Table",
-                                    cls="input input-bordered w-full"
+                                    cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold"
                                 ),
                                 cls="mb-4"
                             ),
                             Div(
-                                Label("Fields:", cls="label"),
+                                Label("Fields:", cls="text-lg font-bold label"),
                                 Div(
-                                    Label(Input(type="text",name="field",cls="grow",placeholder="Field"),
-                                    cls="input input-bordered flex items-center mb-2",id="fields-inputs"),
+                                    Label(Input(type="text",name="field",cls="grow border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold",placeholder="Field"),
+                                    cls=" flex items-center mb-2",id="fields-inputs"),
                                     id='fields',
                                     cls="h-32 overflow-y-auto"
                                 ),
-                                Button(
+                                Label(
                                     "Add Field",
                                     type="button",
                                     hx_post="/add_field",
                                     hx_target="#fields",
                                     hx_swap="beforeend",
-                                    cls="btn bg-yellow btn-outline w-full mt-3"
+                                    cls="card bg-yellow-300 w-full hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-3 text-lg font-bold"
                                 ),
                                 cls="mb-4"
                             ),
                             Div(
-                                Button(
+                                Label(
                                     "Add Table",
                                     type="button",
                                     hx_post="/create_table",
                                     hx_include="#fields-inputs input",
-                                    cls="btn bg-yellow btn-outline w-full"
+                                    cls="card bg-yellow-300 w-full hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center text-lg font-bold"
                                 ),
                                 cls="mt-12"
                             ),
@@ -73,88 +73,38 @@ def get():
         )
     )
 
-    # Drawer for adding a new record (updated to include table selection)
+    # Updated Drawer for adding a new record with dynamic fields
     add_record = Div(
+    Div(
+        Input(id="add-record-drawer", type="checkbox", cls="drawer-toggle"),
+        Div(cls="drawer-content"),
         Div(
-            Input(id="add-record-drawer", type="checkbox", cls="drawer-toggle"),
-            Div(cls="drawer-content"),
+            Label(cls="drawer-overlay", **{"for": "add-record-drawer"}),
             Div(
-                Label(cls="drawer-overlay", **{"for": "add-record-drawer"}),
-                Div(
-                    H3("Add New Record", cls="text-lg font-bold mb-4"),
-                    Form(
-                        Div(
-                            Div(
-                                Label("Record Name:", cls="label"),
-                                Input(
-                                    type="text",
-                                    name="record_name",
-                                    placeholder="Enter record name",
-                                    cls="input input-bordered w-full"
-                                ),
-                                cls="mb-4"
-                            ),
-                            Div(
-                                Label("Description:", cls="label"),
-                                Textarea(
-                                    name="description",
-                                    placeholder="Enter description",
-                                    cls="textarea textarea-bordered w-full"
-                                ),
-                                cls="mb-4"
-                            ),
-                            Div(
-                                Label("Select Table:", cls="label"),
-                                Select(
-                                    *[Option(table, value=table) for table in db.tables()],
-                                    name="table",
-                                    cls="select select-bordered w-full"
-                                ),
-                                cls="mb-4"
-                            ),
-                            Div(
-                                Button(
-                                    "Add Record",
-                                    type="submit",
-                                    hx_post="/add_record",
-                                    hx_trigger="load",
-                                    hx_swap="none",
-                                    cls="btn btn-success w-full"
-                                ),
-                                cls="mt-4"
-                            ),
-                            cls="p-4"
-                        ),
-                        cls="bg-base-200 rounded-lg"
-                    ),
-                    cls="menu bg-base-200 text-base-content min-h-full w-80 p-4"
-                ),
-                cls="drawer-side"
+                H3("Add New Record",id="record-form-fields",cls="text-lg font-bold mb-4"),
+                cls="menu bg-orange-500 text-base-content min-h-full w-80 p-4"
             ),
-            cls="drawer drawer-end"
-        )
+            cls="drawer-side"
+        ),
+        cls="drawer drawer-end"
+    )
     )
 
     # Table list as cards
     tables = Div(
         Div(
             Div("Tables", cls="text-lg text-yellow-300 font-bold w-48"),
-            list_collection(),
+            list_tables(),
             cls="flex flex-col gap-3"
         ),
         cls="overflow-hidden overflow-y-auto p-4"
     )
 
-    # Records section (updated dynamically using htmx)
+    # Records section
     records = Div(
-                Table(cls="table-auto w-full bg-ghost",id="records"),
-                    Label(
-                    "Add record",
-                    cls="btn bg-black btn-outline w-64 mt-5",
-                    **{"for": "add-record-drawer"}
-                    ),
-                    cls="card w-56 bg-ghost rounded-box flex-grow place-items-center overflow-x-clip")
-
+    Table(cls="table-auto w-full bg-ghost", id="records"),
+    cls="card w-56 bg-ghost rounded-box flex-grow place-items-center overflow-x-clip"
+)
 
     return (
         Header(
@@ -188,7 +138,7 @@ def get():
                         ),
                         Label(
                             "Add Table",
-                            cls="btn bg-black btn-outline w-48",
+                            cls="card bg-yellow-300 w-48 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center",
                             **{"for": "add-key-drawer"}
                         ),
                         cls="card-body"
@@ -205,18 +155,16 @@ def get():
     )
 
 
-def list_collection():
-    """
-    Generate a list of tables as clickable cards.
-    """
+def list_tables():
+    """Generate a list of tables as clickable cards."""
     database = db.tables()
     cards = []
     for key in database:
         cards.append(
             Button(
-                Div(key, cls="text-lg font-bold"),  # Table name
+                Div(key, cls="text-lg font-bold"),
                 Div("Table", cls="text-md"),
-                cls="card bg-yellow-300 w-48 mb-3 hover:bg-yellow-400 bg-white border border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
+                cls="card bg-yellow-300 w-48 mb-3 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
                 hx_post=f"/view_table/{key}",
                 hx_target="#records",
                 hx_swap="innerHTML"
@@ -226,9 +174,7 @@ def list_collection():
 
 
 def keys_list(table):
-    """
-    Extract unique keys (columns) from a table.
-    """
+    """Extract unique keys (columns) from a table."""
     all_keys = set()
     for doc in db.table(table).all():
         all_keys.update(doc.keys())
@@ -236,15 +182,12 @@ def keys_list(table):
 
 
 def list_records(table_input):
-    """
-    Display all records in a given table.
-    """
+    """Display all records in a given table."""
     headers = keys_list(table_input)
     table = db.table(table_input)
     records = table.all()
 
     if not records:
-        # Display empty table design
         return Div(
             H3(f"Table '{table_input}'", cls="text-lg font-bold mb-4"),
             Div("No records available.", cls="text-gray-500"),
@@ -254,22 +197,27 @@ def list_records(table_input):
     # Table headers
     table_head = Tr(
         *[Th(header, cls="text-left px-4 py-2 font-bold") for header in headers],
-        cls="bg-yellow-300"
+        cls="bg-yellow-300 border-2"
     )
 
     # Table rows
     table_body = [
-        Tr(
-            *[Td(record.get(header, "N/A"), cls="px-4 py-2") for header in headers],
-            cls="bg-yellow-300 hover:bg-yellow-400 hover:translate-x-1"
-        )
-        for record in records
-    ]
+    Tr(
+        *[
+            Td(record.get(header), cls="px-4 py-2") 
+            if record.get(header) not in (None, "")  # Check for None or empty string
+            else '' 
+            for header in headers
+        ],
+        cls="bg-yellow-300 hover:bg-yellow-400"
+    )
+    for record in records]
+
 
     return Table(
         Thead(table_head),
         Tbody(*table_body),
-        cls="table-auto w-full bg-ghost"
+        cls="table-auto border-2 border-black w-full bg-yellow-300 shadow-[8px_8px_0px_rgba(0,0,0,1)]"
     )
 
 
@@ -279,15 +227,27 @@ def post(selected_table: str):
         return Div("No table selected.", cls="text-red-500")
     if selected_table not in db.tables():
         return Div(f"Table '{selected_table}' does not exist.", cls="text-red-500")
-    return list_records(selected_table)
+    
+    # Return both the records and update the add record button
+    return Div(
+        list_records(selected_table),
+        Div(
+        Label(
+            "Add record",
+            cls="card bg-yellow-300 w-64 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            hx_post=f"/get_table_fields/{selected_table}",
+            hx_target="#record-form-fields",
+            **{"for": "add-record-drawer"}
+        ),
+        cls="flex justify-center"
+        )
+    )
+
 
 
 @rt("/create_table")
 async def post(request: Request):
-    # Get form data using FastHTML's form data handling
     form = await request.form()
-    
-    # Get collection name from form data
     table_name = form.get("table-name")
     
     if not table_name:
@@ -296,38 +256,100 @@ async def post(request: Request):
     if table_name in db.tables():
         return Div("Table already exists.", cls="text-red-500")
     
-    # Create the table
     table = db.table(table_name)
     
-    # Process the form data
     for key, value in form.items():
-        if key != "table-name":  # Skip the collection name field
-            table.insert({value: ""})
+        if key != "table-name":
+            if not value:
+                return Div("Fields cannot be empty.", cls="text-red-500")
+            else:
+                table.insert({value: ""})
     
     return Redirect("/")
 
 
-@rt("/add_record")
-def post(record_name: str, description: str, table: str):
-    """
-    Add a new record to the selected table.
-    """
-    if not record_name or not description or not table:
-        return Div("Invalid input!", cls="text-red-500")
-    if table not in db.tables():
-        return Div(f"Table '{table}' does not exist.", cls="text-red-500")
-    db.table(table).insert({"name": record_name, "description": description})
-    return RedirectResponse("/", status_code=303)
+@rt("/get_table_fields/{table_name}")
+def post(table_name: str):
+    """Fetch and display fields for the selected table"""
+    if table_name == "default" or table_name not in db.tables():
+        return Div("Please select a table first", cls="text-red-500")
+    
+    fields = keys_list(table_name)
+    return Form(
+        H3(f"Add Record to {table_name}", cls="text-lg font-bold mb-4"),
+        *[
+            Div(
+                Label(field.title() + ":", cls="label"),
+                Input(
+                    type="text",
+                    name=field,
+                    placeholder=f"Enter {field.lower()}",
+                    cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
+                ),
+                cls="mb-4"
+            )
+            for field in fields if field  # Skip empty fields
+        ],
+        Label(
+            "Add Record",
+            type="submit",
+            hx_post=f"/add_record/{table_name}",
+            hx_target="#records",
+            cls="card bg-yellow-300 w-full hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-2"
+        ),
+        cls="p-4 bg-ghost rounded-lg"
+    )
+
+
+
+@rt("/add_record/{table_name}")
+async def post(request: Request, table_name: str):
+    """Add a record to the specified table with dynamic fields"""
+    if table_name not in db.tables():
+        return Div("Table not found", cls="text-red-500")
+    
+    form = await request.form()
+    
+    # Create record dictionary from form data
+    record = {key: value for key, value in form.items() if value.strip()}
+    
+    if not record:
+        return Div("Please fill at least one field", cls="text-red-600 text-lg"),Div(
+        Label(
+            "Add record",
+            cls="btn bg-black btn-outline w-64 mt-5 flex self-center",
+            hx_post=f"/get_table_fields/{table_name}",
+            hx_target="#record-form-fields",
+            **{"for": "add-record-drawer"}
+        ),
+        cls="flex justify-center"
+        )
+    
+    # Insert the record
+    db.table(table_name).insert(record)
+    
+    # Return updated table view
+    return list_records(table_name)
 
 
 @rt("/add_field")
 def post():
- return Label(Input(type="text",name=f"field {secrets.token_urlsafe(5)}",cls="grow",placeholder="Field"),
-        Button(hx_post="/remove_field",hx_target="#field-label",hx_swap="delete",cls="ti ti-circle-x text-2xl text-orange-500"),
-        cls="input input-bordered flex items-center mb-2",id="field-label")
+    return Label(
+        Input(type="text", name=f"field {secrets.token_urlsafe(5)}", cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold" ,placeholder="Field"),
+        Button(
+            hx_post="/remove_field",
+            hx_target="#field-label",
+            hx_swap="delete",
+            cls="ti ti-circle-x text-2xl text-orange-500"
+        ),
+        cls="flex items-center mb-2",
+        id="field-label"
+    )
+
 
 @rt("/remove_field")
 def post():
- return Div()
+    return Div()
+
 
 serve()
