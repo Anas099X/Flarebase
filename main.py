@@ -1,11 +1,13 @@
 from fasthtml.common import *
 from tinydb import TinyDB, Query
+from urllib.parse import parse_qs
+import secrets
 
 app = FastHTML(exts='ws')
 rt = app.route
 
 # Initialize TinyDB database
-db = TinyDB("playful.json")
+db = TinyDB("sparkbase.json")
 
 
 @rt('/')
@@ -34,14 +36,14 @@ def get():
                             Div(
                                 Label("Fields:", cls="label"),
                                 Div(
-                                    Label(Input(type="text",cls="grow",placeholder="Field"),
-                                    cls="input input-bordered flex items-center mb-2"),
+                                    Label(Input(type="text",name="field",cls="grow",placeholder="Field"),
+                                    cls="input input-bordered flex items-center mb-2",id="fields-inputs"),
                                     id='fields',
                                     cls="h-32 overflow-y-auto"
                                 ),
                                 Button(
                                     "Add Field",
-                                    type="submit",
+                                    type="button",
                                     hx_post="/add_field",
                                     hx_target="#fields",
                                     hx_swap="beforeend",
@@ -52,9 +54,9 @@ def get():
                             Div(
                                 Button(
                                     "Add Table",
-                                    type="submit",
+                                    type="button",
                                     hx_post="/create_table",
-                                    hx_swap="none",
+                                    hx_include="#fields-inputs input",
                                     cls="btn bg-yellow btn-outline w-full"
                                 ),
                                 cls="mt-12"
@@ -281,13 +283,28 @@ def post(selected_table: str):
 
 
 @rt("/create_table")
-def post(collectionname: str):
+async def post(request: Request):
+    # Get form data using FastHTML's form data handling
+    form = await request.form()
+    
+    # Get collection name from form data
+    collectionname = form.get("collectionname")
+    
     if not collectionname:
         return Div("Table name cannot be empty.", cls="text-red-500")
+    
     if collectionname in db.tables():
         return Div("Table already exists.", cls="text-red-500")
-    db.table(collectionname).insert({"example_field": "example_value"})
-    return RedirectResponse("/", status_code=303)
+    
+    # Create the table
+    table = db.table(collectionname)
+    
+    # Process the form data
+    for key, value in form.items():
+        if key != "collectionname":  # Skip the collection name field
+            table.insert({value: ""})
+    
+    return Redirect("/")
 
 
 @rt("/add_record")
@@ -305,7 +322,7 @@ def post(record_name: str, description: str, table: str):
 
 @rt("/add_field")
 def post():
- return Label(Input(type="text",cls="grow",placeholder="Field"),
+ return Label(Input(type="text",name=f"field {secrets.token_urlsafe(5)}",cls="grow",placeholder="Field"),
         Button(hx_post="/remove_field",hx_target="#field-label",hx_swap="delete",cls="ti ti-circle-x text-2xl text-orange-500"),
         cls="input input-bordered flex items-center mb-2",id="field-label")
 
