@@ -27,7 +27,7 @@ def get():
                                 Label("Table Name:", cls="label"),
                                 Input(
                                     type="text",
-                                    name="collectionname",
+                                    name="table-name",
                                     placeholder="Table",
                                     cls="input input-bordered w-full"
                                 ),
@@ -288,20 +288,20 @@ async def post(request: Request):
     form = await request.form()
     
     # Get collection name from form data
-    collectionname = form.get("collectionname")
+    table_name = form.get("table-name")
     
-    if not collectionname:
+    if not table_name:
         return Div("Table name cannot be empty.", cls="text-red-500")
     
-    if collectionname in db.tables():
+    if table_name in db.tables():
         return Div("Table already exists.", cls="text-red-500")
     
     # Create the table
-    table = db.table(collectionname)
+    table = db.table(table_name)
     
     # Process the form data
     for key, value in form.items():
-        if key != "collectionname":  # Skip the collection name field
+        if key != "table-name":  # Skip the collection name field
             table.insert({value: ""})
     
     return Redirect("/")
