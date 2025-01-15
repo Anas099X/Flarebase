@@ -1,7 +1,7 @@
 from fasthtml.common import *
 from tinydb import TinyDB, Query
 from urllib.parse import parse_qs
-import secrets
+import secrets, json
 
 app = FastHTML(exts='ws')
 rt = app.route
@@ -106,7 +106,7 @@ def get():
     cls="card w-56 bg-ghost rounded-box flex-grow place-items-center overflow-x-clip"
 )
 
-    return (
+    return Div(
         Header(
             Link(
                 rel="stylesheet",
@@ -121,7 +121,7 @@ def get():
         ),
         Head(
             Div(
-                Div(I(cls="ti ti-comet text-yellow-200 text-3xl"), " SparkBase", cls="text-lg text-yellow-200 font-bold"),
+                Div(I(cls="ti ti-comet text-yellow-300 text-3xl"), " SparkBase", cls="text-lg text-yellow-300 font-bold"),
                 cls="navbar bg-orange-500"
             )
         ),
@@ -129,7 +129,7 @@ def get():
             Div(
                 Div(
                     Div(
-                        Div(I(cls="ti ti-database text-yellow-200 text-2xl"), " Database", cls="text-2xl text-yellow-200 font-bold"),
+                        Div(I(cls="ti ti-database text-yellow-300 text-2xl"), " Database", cls="text-2xl text-yellow-300 font-bold"),
                         Div(
                             tables,
                             Div(cls="divider divider-horizontal"),
@@ -138,7 +138,7 @@ def get():
                         ),
                         Label(
                             "Add Table",
-                            cls="card bg-yellow-300 w-48 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center",
+                            cls="card bg-yellow-300 w-32 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center",
                             **{"for": "add-key-drawer"}
                         ),
                         cls="card-body"
@@ -151,7 +151,8 @@ def get():
             ),
             data_theme="light",
             style="min-height:100vh;"
-        )
+        ),
+        cls="bg-yellow-300 "
     )
 
 
@@ -230,6 +231,7 @@ def post(selected_table: str):
     
     # Return both the records and update the add record button
     return Div(
+        Div(Div("GET",cls="badge bg-orange-500 mr-1"),f"/api/tables/{selected_table}",cls="bg-yellow-300 w-full h-10 bg-white border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
         list_records(selected_table),
         Div(
         Label(
@@ -332,6 +334,17 @@ async def post(request: Request, table_name: str):
     return list_records(table_name)
 
 
+@rt("/api/tables/{table}")
+def get(table:str):
+    json_output = db.table(table).all()
+    return JSONResponse(json_output)
+
+@rt("/api/tables")
+def get():
+    json_output = list(db.tables())
+    return JSONResponse(json_output)
+
+
 @rt("/add_field")
 def post():
     return Label(
@@ -345,7 +358,6 @@ def post():
         cls="flex items-center mb-2",
         id="field-label"
     )
-
 
 @rt("/remove_field")
 def post():
