@@ -97,13 +97,13 @@ def get():
             list_tables(),
             cls="flex flex-col gap-3"
         ),
-        cls="overflow-hidden overflow-y-auto p-4"
+        cls="overflow-y-auto p-4"
     )
 
     # Records section
     records = Div(
     Table(cls="table-auto w-full bg-ghost", id="records"),
-    cls="card w-56 bg-ghost rounded-box flex-grow place-items-center overflow-x-clip"
+    cls="w-56 bg-ghost flex-grow overflow-y-auto overflow-x-auto"
 )
 
     return Div(
@@ -241,11 +241,19 @@ def post(selected_table: str):
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
+        Label(
+            Div(cls="ti ti-trash text-xl text-center"),
+            cls="card bg-yellow-300 w-12 h-12 hover:bg-yellow-400 bg-white border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5",
+            hx_post=f"/delete_table/{selected_table}"
+        ),
         cls="flex justify-center"
         )
     )
 
-
+@rt("/delete_table/{table}")
+def post(table:str):
+ db.drop_table(table)
+ return Redirect("/")
 
 @rt("/create_table")
 async def post(request: Request):
@@ -331,7 +339,25 @@ async def post(request: Request, table_name: str):
     db.table(table_name).insert(record)
     
     # Return updated table view
-    return list_records(table_name)
+    return Div(
+        Div(Div("GET",cls="badge bg-orange-500 mr-1"),f"/api/tables/{table_name}",cls="bg-yellow-300 w-full h-10 bg-white border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        list_records(table_name),
+        Div(
+        Label(
+            "Add record",
+            cls="card bg-yellow-300 w-64 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            hx_post=f"/get_table_fields/{table_name}",
+            hx_target="#record-form-fields",
+            **{"for": "add-record-drawer"}
+        ),
+        Label(
+            Div(cls="ti ti-trash text-xl text-center"),
+            cls="card bg-yellow-300 w-12 h-12 hover:bg-yellow-400 bg-white border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5",
+            hx_post=f"/delete_table/{table_name}"
+        ),
+        cls="flex justify-center"
+        )
+    )
 
 
 @rt("/api/tables/{table}")
