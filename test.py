@@ -1,6 +1,6 @@
 from tinydb import *
 
-db = TinyDB('sparkbase.json')
+db = TinyDB('cometbase.json')
 
 
 print(db.drop_table('test312'))

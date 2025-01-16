@@ -7,7 +7,7 @@ app = FastHTML(exts='ws')
 rt = app.route
 
 # Initialize TinyDB database
-db = TinyDB("sparkbase.json")
+db = TinyDB("cometbase.json")
 
 
 @rt('/')
@@ -29,14 +29,14 @@ def get():
                                     type="text",
                                     name="table-name",
                                     placeholder="Table",
-                                    cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold"
+                                    cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-base-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold"
                                 ),
                                 cls="mb-4"
                             ),
                             Div(
                                 Label("Fields:", cls="text-lg font-bold label"),
                                 Div(
-                                    Label(Input(type="text",name="field",cls="grow border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold",placeholder="Field"),
+                                    Label(Input(type="text",name="field",cls="grow border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-base-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold",placeholder="Field"),
                                     cls=" flex items-center mb-2",id="fields-inputs"),
                                     id='fields',
                                     cls="h-32 overflow-y-auto"
@@ -47,7 +47,7 @@ def get():
                                     hx_post="/add_field",
                                     hx_target="#fields",
                                     hx_swap="beforeend",
-                                    cls="card bg-yellow-300 w-full hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-3 text-lg font-bold"
+                                    cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-3 text-lg font-bold"
                                 ),
                                 cls="mb-4"
                             ),
@@ -57,7 +57,7 @@ def get():
                                     type="button",
                                     hx_post="/create_table",
                                     hx_include="#fields-inputs input",
-                                    cls="card bg-yellow-300 w-full hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center text-lg font-bold"
+                                    cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center text-lg font-bold"
                                 ),
                                 cls="mt-12"
                             ),
@@ -65,7 +65,7 @@ def get():
                         ),
                         cls="bg-ghost rounded-lg"
                     ),
-                    cls="menu text-base-content min-h-full w-96 p-4 bg-orange-500"
+                    cls="menu text-base-content min-h-full w-96 p-4 bg-base-200"
                 ),
                 cls="drawer-side"
             ),
@@ -82,7 +82,7 @@ def get():
             Label(cls="drawer-overlay", **{"for": "add-record-drawer"}),
             Div(
                 H3("Add New Record",id="record-form-fields",cls="text-lg font-bold mb-4"),
-                cls="menu bg-orange-500 text-base-content min-h-full w-80 p-4"
+                cls="menu bg-base-200 text-base-content min-h-full w-80 p-4"
             ),
             cls="drawer-side"
         ),
@@ -93,7 +93,7 @@ def get():
     # Table list as cards
     tables = Div(
         Div(
-            Div("Tables", cls="text-lg text-yellow-300 font-bold w-48"),
+            Div("Tables", cls="text-lg text-warning font-bold w-48"),
             list_tables(),
             cls="flex flex-col gap-3"
         ),
@@ -121,15 +121,15 @@ def get():
         ),
         Head(
             Div(
-                Div(I(cls="ti ti-comet text-yellow-300 text-3xl"), " SparkBase", cls="text-lg text-yellow-300 font-bold"),
-                cls="navbar bg-orange-500"
+                Div(I(cls="ti ti-comet text-warning text-3xl"), " Cometbase", cls="text-lg text-warning font-bold"),
+                cls="navbar bg-ghost"
             )
         ),
         Body(
             Div(
                 Div(
                     Div(
-                        Div(I(cls="ti ti-database text-yellow-300 text-2xl"), " Database", cls="text-2xl text-yellow-300 font-bold"),
+                        Div(I(cls="ti ti-database text-warning text-2xl"), " Database", cls="text-2xl text-warning font-bold"),
                         Div(
                             tables,
                             Div(cls="divider divider-horizontal"),
@@ -138,21 +138,21 @@ def get():
                         ),
                         Label(
                             "Add Table",
-                            cls="card bg-yellow-300 w-32 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center",
+                            cls="card bg-base-300 w-32 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center",
                             **{"for": "add-key-drawer"}
                         ),
                         cls="card-body"
                     ),
-                    cls="card shadow-xl mx-auto w-full max-w-6xl bg-orange-500"
+                    cls="card shadow-xl mx-auto w-full max-w-6xl bg-base-200"
                 ),
                 add_collection,
                 add_record,
                 cls="container mx-auto py-6 px-4"
             ),
-            data_theme="light",
+            data_theme="dim",
             style="min-height:100vh;"
         ),
-        cls="bg-yellow-300 "
+        cls="bg-base-100"
     )
 
 
@@ -165,7 +165,7 @@ def list_tables():
             Button(
                 Div(key, cls="text-lg font-bold"),
                 Div("Table", cls="text-md"),
-                cls="card bg-yellow-300 w-48 mb-3 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
+                cls="card bg-base-300 w-48 mb-3 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
                 hx_post=f"/view_table/{key}",
                 hx_target="#records",
                 hx_swap="innerHTML"
@@ -198,7 +198,7 @@ def list_records(table_input):
     # Table headers
     table_head = Tr(
         *[Th(header, cls="text-left px-4 py-2 font-bold") for header in headers],
-        cls="bg-yellow-300 border-2"
+        cls="bg-base-300 border-2 border-black"
     )
 
     # Table rows
@@ -210,7 +210,7 @@ def list_records(table_input):
             else '' 
             for header in headers
         ],
-        cls="bg-yellow-300 hover:bg-yellow-400"
+        cls="bg-base-300 hover:bg-warning hover:text-black"
     )
     for record in records]
 
@@ -218,7 +218,7 @@ def list_records(table_input):
     return Table(
         Thead(table_head),
         Tbody(*table_body),
-        cls="table-auto border-2 border-black w-full bg-yellow-300 shadow-[8px_8px_0px_rgba(0,0,0,1)]"
+        cls="table-auto border-2 border-black w-full bg-base-300 shadow-[8px_8px_0px_rgba(0,0,0,1)]"
     )
 
 
@@ -231,19 +231,19 @@ def post(selected_table: str):
     
     # Return both the records and update the add record button
     return Div(
-        Div(Div("GET",cls="badge bg-orange-500 mr-1"),f"/api/tables/{selected_table}",cls="bg-yellow-300 w-full h-10 bg-white border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{selected_table}",cls="bg-base-300 w-full h-10 border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center text-primary mb-3"),
         list_records(selected_table),
         Div(
         Label(
             "Add record",
-            cls="card bg-yellow-300 w-64 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            cls="card bg-base-300 w-64 hover:bg-warning hover:text-black hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
             hx_post=f"/get_table_fields/{selected_table}",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
         Label(
-            Div(cls="ti ti-trash text-xl text-center"),
-            cls="card bg-yellow-300 w-12 h-12 hover:bg-yellow-400 bg-white border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5",
+            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+            cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
             hx_post=f"/delete_table/{selected_table}"
         ),
         cls="flex justify-center"
@@ -294,7 +294,7 @@ def post(table_name: str):
                     type="text",
                     name=field,
                     placeholder=f"Enter {field.lower()}",
-                    cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
+                    cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-base-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
                 ),
                 cls="mb-4"
             )
@@ -305,7 +305,7 @@ def post(table_name: str):
             type="submit",
             hx_post=f"/add_record/{table_name}",
             hx_target="#records",
-            cls="card bg-yellow-300 w-full hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-2"
+            cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-2"
         ),
         cls="p-4 bg-ghost rounded-lg"
     )
@@ -340,19 +340,19 @@ async def post(request: Request, table_name: str):
     
     # Return updated table view
     return Div(
-        Div(Div("GET",cls="badge bg-orange-500 mr-1"),f"/api/tables/{table_name}",cls="bg-yellow-300 w-full h-10 bg-white border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
         list_records(table_name),
         Div(
         Label(
             "Add record",
-            cls="card bg-yellow-300 w-64 hover:bg-yellow-400 bg-white border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            cls="card bg-base-300 w-64 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
             hx_post=f"/get_table_fields/{table_name}",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
         Label(
-            Div(cls="ti ti-trash text-xl text-center"),
-            cls="card bg-yellow-300 w-12 h-12 hover:bg-yellow-400 bg-white border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5",
+            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+            cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
             hx_post=f"/delete_table/{table_name}"
         ),
         cls="flex justify-center"
@@ -374,12 +374,12 @@ def get():
 @rt("/add_field")
 def post():
     return Label(
-        Input(type="text", name=f"field {secrets.token_urlsafe(5)}", cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-yellow-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold" ,placeholder="Field"),
+        Input(type="text", name=f"field {secrets.token_urlsafe(5)}", cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-base-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md text-lg font-bold",placeholder="Field"),
         Button(
             hx_post="/remove_field",
             hx_target="#field-label",
             hx_swap="delete",
-            cls="ti ti-circle-x text-2xl text-orange-500"
+            cls="ti ti-circle-x text-2xl text-base-200"
         ),
         cls="flex items-center mb-2",
         id="field-label"
