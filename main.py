@@ -47,7 +47,7 @@ def get():
                                     hx_post="/add_field",
                                     hx_target="#fields",
                                     hx_swap="beforeend",
-                                    cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-3 text-lg font-bold"
+                                    cls="card bg-base-300 w-full hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-3 text-lg font-bold"
                                 ),
                                 cls="mb-4"
                             ),
@@ -189,32 +189,71 @@ def list_records(table_input):
     records = table.all()
 
     if not records:
+        # Handle case where no records exist
         return Div(
             H3(f"Table '{table_input}'", cls="text-lg font-bold mb-4"),
             Div("No records available.", cls="text-gray-500"),
             cls="p-4"
         )
 
+    # Add "Actions" column to headers
+    headers.append("Actions")
+    
     # Table headers
     table_head = Tr(
         *[Th(header, cls="text-left px-4 py-2 font-bold") for header in headers],
         cls="bg-base-300 border-2 border-black"
     )
 
-    # Table rows
-    table_body = [
-    Tr(
-        *[
-            Td(record.get(header), cls="px-4 py-2") 
-            if record.get(header) not in (None, "")  # Check for None or empty string
-            else '' 
-            for header in headers
-        ],
-        cls="bg-base-300 hover:bg-warning hover:text-black"
-    )
-    for record in records]
+    # Table rows with actions
+    table_body = []
+    for record in records:
+        # Skip record if all its values are None or empty
+        if all(value in (None, "") for value in record.values()):
+            continue
 
+        # Add data cells for each column
+        row_data = [
+            Td(record.get(header, ""), cls="px-4 py-2")
+            for header in headers[:-1]  # Exclude the "Actions" column
+        ]
 
+        # Add action buttons
+        actions = Td(
+            Div(
+                Button(
+                    I(cls="ti ti-edit text-xl"),
+                    cls="mr-1",
+                    hx_post=f"/edit_record/{table_input}/{record.doc_id}",
+                    hx_target="#record-form-fields"
+                ),
+                Button(
+                    I(cls="ti ti-trash text-xl text-red-500"),
+                    cls="",
+                    hx_post=f"/delete_record/{table_input}/{record.doc_id}",
+                    hx_target="#records",
+                    hx_confirm="Are you sure you want to delete this record?"
+                ),
+                cls="flex gap-1"
+            ),
+            cls="px-4 py-2"
+        )
+        row_data.append(actions)
+
+        # Append the row to the table body
+        table_body.append(
+            Tr(*row_data, cls="bg-base-300 hover:bg-warning hover:text-black")
+        )
+
+    # If no valid rows remain, show a message instead of an empty table
+    if not table_body:
+        return Div(
+            H3(f"Table '{table_input}'", cls="text-lg font-bold mb-4"),
+            Div("No valid records to display.", cls="text-gray-500"),
+            cls="p-4"
+        )
+
+    # Return the table
     return Table(
         Thead(table_head),
         Tbody(*table_body),
@@ -228,27 +267,38 @@ def post(selected_table: str):
         return Div("No table selected.", cls="text-red-500")
     if selected_table not in db.tables():
         return Div(f"Table '{selected_table}' does not exist.", cls="text-red-500")
-    
-    # Return both the records and update the add record button
+
+    # Return both the records and update the "Add record" and "Delete table" buttons
     return Div(
-        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{selected_table}",cls="bg-base-300 w-full h-10 border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center text-primary mb-3"),
-        list_records(selected_table),
+        # Display the GET API URL for the table
         Div(
-        Label(
-            "Add record",
-            cls="card bg-base-300 w-64 hover:bg-warning hover:text-black hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-            hx_post=f"/get_table_fields/{selected_table}",
-            hx_target="#record-form-fields",
-            **{"for": "add-record-drawer"}
+            Div("GET", cls="badge badge-warning mr-1"),
+            f"/api/tables/{selected_table}",
+            cls="bg-base-300 w-full h-10 border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center text-primary mb-3"
         ),
-        Label(
-            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
-            cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
-            hx_post=f"/delete_table/{selected_table}"
-        ),
-        cls="flex justify-center"
+        # List records from the selected table
+        list_records(selected_table),
+        # Add record and delete table buttons
+        Div(
+            # Add record button
+            Label(
+                "Add record",
+                cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+                hx_post=f"/get_table_fields/{selected_table}",
+                hx_target="#record-form-fields",
+                **{"for": "add-record-drawer"}
+            ),
+            # Delete table button
+            Label(
+                Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+                cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
+                hx_confirm="Are you sure you want to delete this record?",
+                hx_post=f"/delete_table/{selected_table}"
+            ),
+            cls="flex justify-center"
         )
     )
+
 
 @rt("/delete_table/{table}")
 def post(table:str):
@@ -360,6 +410,32 @@ async def post(request: Request, table_name: str):
     )
 
 
+@rt("/delete_record/{table_name}/{record_id}")
+def post(table_name: str, record_id: int):
+    """Delete a specific record from a table"""
+    table = db.table(table_name)
+    table.remove(doc_ids=[record_id])
+    
+    return Div(
+        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        list_records(table_name),
+        Div(
+        Label(
+            "Add record",
+            cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            hx_post=f"/get_table_fields/{table_name}",
+            hx_target="#record-form-fields",
+            **{"for": "add-record-drawer"}
+        ),
+        Label(
+            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+            cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
+            hx_post=f"/delete_table/{table_name}"
+        ),
+        cls="flex justify-center"
+        )
+    )
+
 @rt("/api/tables/{table}")
 def get(table:str):
     json_output = db.table(table).all()
@@ -379,7 +455,7 @@ def post():
             hx_post="/remove_field",
             hx_target="#field-label",
             hx_swap="delete",
-            cls="ti ti-circle-x text-2xl text-base-200"
+            cls="ti ti-file-x text-2xl text-red-500"
         ),
         cls="flex items-center mb-2",
         id="field-label"

@@ -2,5 +2,6 @@ from tinydb import *
 
 db = TinyDB('cometbase.json')
 
+test = db.table('areas2')
 
-print(db.drop_table('test312'))
+print(test.all())
