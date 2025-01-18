@@ -1,7 +1,17 @@
-from tinydb import *
+from tinydb import TinyDB
 
+# Initialize the database
 db = TinyDB('flarebase.json')
 
-test = db.table('test')
+# Access the 'areas' table
+test = db.table('areas')
 
-test.update({"interests": "YEEES"}, doc_ids=[1])
+# Get the document with doc_id=2
+result = test.get(doc_id=2)
+
+
+for key, value in result.items():
+    print(f"Key: {key}, Value: {value}")
+
+
+

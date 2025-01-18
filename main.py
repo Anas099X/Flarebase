@@ -228,7 +228,7 @@ def list_records(table_input):
                 Label(
                     I(cls="ti ti-edit text-xl"),
                     cls="mr-1",
-                    hx_post=f"/get_table_fields/{table_input}/update",
+                    hx_post=f"/fetch_fields/{table_input}/update/{record.doc_id}",
                     hx_target="#record-form-fields",
                     **{"for": "add-record-drawer"}
                 ),
@@ -289,7 +289,7 @@ def post(selected_table: str):
             Label(
                 "Add record",
                 cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-                hx_post=f"/get_table_fields/{selected_table}/add",
+                hx_post=f"/fetch_fields/{selected_table}/add",
                 hx_target="#record-form-fields",
                 **{"for": "add-record-drawer"}
             ),
@@ -333,15 +333,15 @@ async def post(request: Request):
     return Redirect("/")
 
 
-@rt("/get_table_fields/{table_name}/{mode}")
-def post(table_name: str,mode:str):
+@rt("/fetch_fields/{table_name}/{mode}/{record_id}")
+def post(table_name: str ,mode:str ,record_id:int = None):
     """Fetch and display fields for the selected table"""
     if table_name == "default" or table_name not in db.tables():
         return Div("Please select a table first", cls="text-red-500")
     
     fields = keys_list(table_name)
     table = db.table(table_name)
-    records = table.all()
+    records = table.get(doc_id=record_id)
     if 'add' in mode:
      return Form(
         H3(f"Add Record to {table_name}", cls="text-lg font-bold mb-4"),
@@ -373,26 +373,25 @@ def post(table_name: str,mode:str):
         H3(f"Add Record to {table_name}", cls="text-lg font-bold mb-4"),
         *[
             Div(
-                Label(field.title() + ":", cls="label"),
+                Label(key + ":", cls="label"),
                 Input(
                     type="text",
-                    name=field,
-                    value=record.get(field, ""),
-                    placeholder=f"Enter {field.lower()}",
+                    name=key,
+                    value=record,
+                    placeholder=f"Enter {key.lower()}",
                     cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-base-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
                 ),
-                Label(
+                cls="mb-4"
+            )  # Skip empty fields
+            for key ,record in records.items()
+        ][::-1],
+        Label(
             "Update Record",
             type="submit",
-            hx_post=f"/update_record/{table_name}/{record.doc_id}",
+            hx_post=f"/update_record/{table_name}/{record_id}",
             hx_target="#records",
             cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-2"
         ),
-                cls="mb-4"
-            )
-            for record in records
-            for field in fields if field  # Skip empty fields
-        ],
         cls="p-4 bg-ghost rounded-lg"
     )
 
@@ -414,7 +413,7 @@ async def post(request: Request, table_name: str):
         Label(
             "Add record",
             cls="btn bg-black btn-outline w-64 mt-5 flex self-center",
-            hx_post=f"/get_table_fields/{table_name}/add",
+            hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
@@ -432,7 +431,7 @@ async def post(request: Request, table_name: str):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-            hx_post=f"/get_table_fields/{table_name}/add",
+            hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
@@ -469,7 +468,7 @@ async def post(request: Request, table_name: str, record_id: int):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-            hx_post=f"/get_table_fields/{table_name}/add",
+            hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
@@ -495,7 +494,7 @@ def post(table_name: str, record_id: int):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-            hx_post=f"/get_table_fields/{table_name}/add",
+            hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
