@@ -1,7 +1,7 @@
 from tinydb import *
 
-db = TinyDB('cometbase.json')
+db = TinyDB('flarebase.json')
 
-test = db.table('areas2')
+test = db.table('test')
 
-print(test.all())
+test.update({"interests": "YEEES"}, doc_ids=[1])

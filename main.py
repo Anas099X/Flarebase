@@ -7,7 +7,7 @@ app = FastHTML(exts='ws')
 rt = app.route
 
 # Initialize TinyDB database
-db = TinyDB("cometbase.json")
+db = TinyDB("flarebase.json")
 
 
 @rt('/')
@@ -87,8 +87,9 @@ def get():
             cls="drawer-side"
         ),
         cls="drawer drawer-end"
+     )
     )
-    )
+
 
     # Table list as cards
     tables = Div(
@@ -121,7 +122,7 @@ def get():
         ),
         Head(
             Div(
-                Div(I(cls="ti ti-comet text-warning text-3xl"), " Cometbase", cls="text-lg text-warning font-bold"),
+                Div(I(cls="ti ti-comet text-warning text-3xl"), " Flarebase", cls="text-lg text-warning font-bold"),
                 cls="navbar bg-ghost"
             )
         ),
@@ -182,6 +183,8 @@ def keys_list(table):
     return list(all_keys)
 
 
+
+
 def list_records(table_input):
     """Display all records in a given table."""
     headers = keys_list(table_input)
@@ -191,7 +194,7 @@ def list_records(table_input):
     if not records:
         # Handle case where no records exist
         return Div(
-            H3(f"Table '{table_input}'", cls="text-lg font-bold mb-4"),
+            H3(f"Table {table_input}", cls="text-lg font-bold mb-4"),
             Div("No records available.", cls="text-gray-500"),
             cls="p-4"
         )
@@ -218,14 +221,16 @@ def list_records(table_input):
             for header in headers[:-1]  # Exclude the "Actions" column
         ]
 
+
         # Add action buttons
         actions = Td(
             Div(
-                Button(
+                Label(
                     I(cls="ti ti-edit text-xl"),
                     cls="mr-1",
-                    hx_post=f"/edit_record/{table_input}/{record.doc_id}",
-                    hx_target="#record-form-fields"
+                    hx_post=f"/get_table_fields/{table_input}/update",
+                    hx_target="#record-form-fields",
+                    **{"for": "add-record-drawer"}
                 ),
                 Button(
                     I(cls="ti ti-trash text-xl text-red-500"),
@@ -252,7 +257,7 @@ def list_records(table_input):
             Div("No valid records to display.", cls="text-gray-500"),
             cls="p-4"
         )
-
+    
     # Return the table
     return Table(
         Thead(table_head),
@@ -284,7 +289,7 @@ def post(selected_table: str):
             Label(
                 "Add record",
                 cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-                hx_post=f"/get_table_fields/{selected_table}",
+                hx_post=f"/get_table_fields/{selected_table}/add",
                 hx_target="#record-form-fields",
                 **{"for": "add-record-drawer"}
             ),
@@ -328,14 +333,17 @@ async def post(request: Request):
     return Redirect("/")
 
 
-@rt("/get_table_fields/{table_name}")
-def post(table_name: str):
+@rt("/get_table_fields/{table_name}/{mode}")
+def post(table_name: str,mode:str):
     """Fetch and display fields for the selected table"""
     if table_name == "default" or table_name not in db.tables():
         return Div("Please select a table first", cls="text-red-500")
     
     fields = keys_list(table_name)
-    return Form(
+    table = db.table(table_name)
+    records = table.all()
+    if 'add' in mode:
+     return Form(
         H3(f"Add Record to {table_name}", cls="text-lg font-bold mb-4"),
         *[
             Div(
@@ -360,6 +368,34 @@ def post(table_name: str):
         cls="p-4 bg-ghost rounded-lg"
     )
 
+    elif 'update' in mode:
+     return Form(
+        H3(f"Add Record to {table_name}", cls="text-lg font-bold mb-4"),
+        *[
+            Div(
+                Label(field.title() + ":", cls="label"),
+                Input(
+                    type="text",
+                    name=field,
+                    value=record.get(field, ""),
+                    placeholder=f"Enter {field.lower()}",
+                    cls="grow w-full border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-base-300 active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
+                ),
+                Label(
+            "Update Record",
+            type="submit",
+            hx_post=f"/update_record/{table_name}/{record.doc_id}",
+            hx_target="#records",
+            cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-2"
+        ),
+                cls="mb-4"
+            )
+            for record in records
+            for field in fields if field  # Skip empty fields
+        ],
+        cls="p-4 bg-ghost rounded-lg"
+    )
+
 
 
 @rt("/add_record/{table_name}")
@@ -378,7 +414,7 @@ async def post(request: Request, table_name: str):
         Label(
             "Add record",
             cls="btn bg-black btn-outline w-64 mt-5 flex self-center",
-            hx_post=f"/get_table_fields/{table_name}",
+            hx_post=f"/get_table_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
@@ -396,7 +432,7 @@ async def post(request: Request, table_name: str):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-            hx_post=f"/get_table_fields/{table_name}",
+            hx_post=f"/get_table_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
@@ -409,6 +445,42 @@ async def post(request: Request, table_name: str):
         )
     )
 
+
+@rt("/update_record/{table_name}/{record_id}")
+async def post(request: Request, table_name: str, record_id: int):
+    """Add a record to the specified table with dynamic fields"""
+    if table_name not in db.tables():
+        return Div("Table not found", cls="text-red-500")
+    
+    form = await request.form()
+    
+    # Create record dictionary from form data
+    record = {key: value for key, value in form.items() if value.strip()}
+    
+    # Update the record
+    table = db.table(table_name)
+    table.update(record, doc_ids=[record_id])
+    
+    # Return updated table view
+    return Div(
+        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        list_records(table_name),
+        Div(
+        Label(
+            "Add record",
+            cls="card bg-base-300 w-64 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            hx_post=f"/get_table_fields/{table_name}/add",
+            hx_target="#record-form-fields",
+            **{"for": "add-record-drawer"}
+        ),
+        Label(
+            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+            cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
+            hx_post=f"/delete_table/{table_name}"
+        ),
+        cls="flex justify-center"
+        )
+    )
 
 @rt("/delete_record/{table_name}/{record_id}")
 def post(table_name: str, record_id: int):
@@ -423,7 +495,7 @@ def post(table_name: str, record_id: int):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
-            hx_post=f"/get_table_fields/{table_name}",
+            hx_post=f"/get_table_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
@@ -435,6 +507,7 @@ def post(table_name: str, record_id: int):
         cls="flex justify-center"
         )
     )
+
 
 @rt("/api/tables/{table}")
 def get(table:str):
@@ -464,6 +537,5 @@ def post():
 @rt("/remove_field")
 def post():
     return Div()
-
 
 serve()
