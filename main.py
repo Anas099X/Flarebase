@@ -3,12 +3,127 @@ from tinydb import TinyDB, Query
 from urllib.parse import parse_qs
 import secrets, json
 
+# Initialize FastHTML app and TinyDB database
 app = FastHTML(exts='ws')
 rt = app.route
-
-# Initialize TinyDB database
 db = TinyDB("flarebase.json")
 
+# Import REST routes (if needed)
+from routes import REST
+
+# ------------------------------
+# Helper Functions
+# ------------------------------
+
+def list_tables():
+    """Generate a list of tables as clickable cards."""
+    database = db.tables()
+    cards = []
+    for key in database:
+        cards.append(
+            Button(
+                Div(key, cls="text-lg font-bold"),
+                Div("Table", cls="text-md"),
+                cls="card bg-base-300 w-48 mb-3 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
+                hx_post=f"/view_table/{key}",
+                hx_target="#records",
+                hx_swap="innerHTML"
+            )
+        )
+    return Div(*cards, cls="overflow-x-auto")
+
+
+def keys_list(table):
+    """Extract unique keys (columns) from a table."""
+    all_keys = set()
+    for doc in db.table(table).all():
+        all_keys.update(doc.keys())
+    return list(all_keys)
+
+
+def list_records(table_input):
+    """Display all records in a given table."""
+    headers = keys_list(table_input)
+    table = db.table(table_input)
+    records = table.all()
+
+    if not records:
+        # Handle case where no records exist
+        return Div(
+            H3(f"Table {table_input}", cls="text-lg font-bold mb-4"),
+            Div("No records available.", cls="text-gray-500"),
+            cls="p-4"
+        )
+
+    # Add "Actions" column to headers
+    headers.append("Actions")
+    
+    # Table headers
+    table_head = Tr(
+        *[Th(header, cls="text-left px-4 py-2 font-bold") for header in headers],
+        cls="bg-base-300 border-2 border-black"
+    )
+
+    # Table rows with actions
+    table_body = []
+    for record in records:
+        # Skip record if all its values are None or empty
+        if all(value in (None, "") for value in record.values()):
+            continue
+
+        # Add data cells for each column
+        row_data = [
+            Td(record.get(header, ""), cls="px-4 py-2")
+            for header in headers[:-1]  # Exclude the "Actions" column
+        ]
+
+        # Add action buttons
+        actions = Td(
+            Div(
+                Label(
+                    I(cls="ti ti-edit text-xl"),
+                    cls="btn btn-sm btn-ghost btn-square",
+                    hx_post=f"/fetch_fields/{table_input}/update/{record.doc_id}",
+                    hx_target="#record-form-fields",
+                    **{"for": "add-record-drawer"}
+                ),
+                Button(
+                    I(cls="ti ti-trash text-xl text-red-500"),
+                    cls="btn btn-sm btn-ghost btn-square",
+                    hx_post=f"/delete_record/{table_input}/{record.doc_id}",
+                    hx_target="#records",
+                    hx_confirm="Are you sure you want to delete this record?"
+                ),
+                cls="flex gap-1"
+            ),
+            cls="px-4 py-2"
+        )
+        row_data.append(actions)
+
+        # Append the row to the table body
+        table_body.append(
+            Tr(*row_data, cls="bg-base-300 hover:bg-warning hover:text-black")
+        )
+
+    # If no valid rows remain, show a message instead of an empty table
+    if not table_body:
+        return Div(
+            H3(f"Table '{table_input}'", cls="text-lg font-bold mb-4"),
+            Div("No valid records to display.", cls="text-gray-500"),
+            cls="p-4"
+        )
+    
+    # Return the table
+    return Table(
+        Thead(table_head),
+        Tbody(*table_body),
+        cls="table-auto border-2 border-black w-full bg-base-300 shadow-[8px_8px_0px_rgba(0,0,0,1)]"
+    )
+
+
+# ------------------------------
+# Routes
+# ------------------------------
 
 @rt('/')
 def get():
@@ -90,7 +205,6 @@ def get():
      )
     )
 
-
     # Table list as cards
     tables = Div(
         Div(
@@ -157,115 +271,6 @@ def get():
     )
 
 
-def list_tables():
-    """Generate a list of tables as clickable cards."""
-    database = db.tables()
-    cards = []
-    for key in database:
-        cards.append(
-            Button(
-                Div(key, cls="text-lg font-bold"),
-                Div("Table", cls="text-md"),
-                cls="card bg-base-300 w-48 mb-3 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
-                hx_post=f"/view_table/{key}",
-                hx_target="#records",
-                hx_swap="innerHTML"
-            )
-        )
-    return Div(*cards, cls="overflow-x-auto")
-
-
-def keys_list(table):
-    """Extract unique keys (columns) from a table."""
-    all_keys = set()
-    for doc in db.table(table).all():
-        all_keys.update(doc.keys())
-    return list(all_keys)
-
-
-
-
-def list_records(table_input):
-    """Display all records in a given table."""
-    headers = keys_list(table_input)
-    table = db.table(table_input)
-    records = table.all()
-
-    if not records:
-        # Handle case where no records exist
-        return Div(
-            H3(f"Table {table_input}", cls="text-lg font-bold mb-4"),
-            Div("No records available.", cls="text-gray-500"),
-            cls="p-4"
-        )
-
-    # Add "Actions" column to headers
-    headers.append("Actions")
-    
-    # Table headers
-    table_head = Tr(
-        *[Th(header, cls="text-left px-4 py-2 font-bold") for header in headers],
-        cls="bg-base-300 border-2 border-black"
-    )
-
-    # Table rows with actions
-    table_body = []
-    for record in records:
-        # Skip record if all its values are None or empty
-        if all(value in (None, "") for value in record.values()):
-            continue
-
-        # Add data cells for each column
-        row_data = [
-            Td(record.get(header, ""), cls="px-4 py-2")
-            for header in headers[:-1]  # Exclude the "Actions" column
-        ]
-
-
-        # Add action buttons
-        actions = Td(
-            Div(
-                Label(
-                    I(cls="ti ti-edit text-xl"),
-                    cls="mr-1",
-                    hx_post=f"/fetch_fields/{table_input}/update/{record.doc_id}",
-                    hx_target="#record-form-fields",
-                    **{"for": "add-record-drawer"}
-                ),
-                Button(
-                    I(cls="ti ti-trash text-xl text-red-500"),
-                    cls="",
-                    hx_post=f"/delete_record/{table_input}/{record.doc_id}",
-                    hx_target="#records",
-                    hx_confirm="Are you sure you want to delete this record?"
-                ),
-                cls="flex gap-1"
-            ),
-            cls="px-4 py-2"
-        )
-        row_data.append(actions)
-
-        # Append the row to the table body
-        table_body.append(
-            Tr(*row_data, cls="bg-base-300 hover:bg-warning hover:text-black")
-        )
-
-    # If no valid rows remain, show a message instead of an empty table
-    if not table_body:
-        return Div(
-            H3(f"Table '{table_input}'", cls="text-lg font-bold mb-4"),
-            Div("No valid records to display.", cls="text-gray-500"),
-            cls="p-4"
-        )
-    
-    # Return the table
-    return Table(
-        Thead(table_head),
-        Tbody(*table_body),
-        cls="table-auto border-2 border-black w-full bg-base-300 shadow-[8px_8px_0px_rgba(0,0,0,1)]"
-    )
-
-
 @rt("/view_table/{selected_table}")
 def post(selected_table: str):
     if not selected_table:
@@ -310,6 +315,7 @@ def post(table:str):
  db.drop_table(table)
  return Redirect("/")
 
+
 @rt("/create_table")
 async def post(request: Request):
     form = await request.form()
@@ -344,7 +350,7 @@ def post(table_name: str ,mode:str ,record_id:int = None):
     records = table.get(doc_id=record_id)
     if 'add' in mode:
      return Form(
-        H3(f"Add Record to {table_name}", cls="text-lg font-bold mb-4"),
+        H3(f"Add record to {table_name}", cls="text-lg font-bold mb-4"),
         *[
             Div(
                 Label(field.title() + ":", cls="label"),
@@ -370,7 +376,7 @@ def post(table_name: str ,mode:str ,record_id:int = None):
 
     elif 'update' in mode:
      return Form(
-        H3(f"Add Record to {table_name}", cls="text-lg font-bold mb-4"),
+        H3(f"Update record of {table_name}", cls="text-lg font-bold mb-4"),
         *[
             Div(
                 Label(key + ":", cls="label"),
@@ -394,7 +400,6 @@ def post(table_name: str ,mode:str ,record_id:int = None):
         ),
         cls="p-4 bg-ghost rounded-lg"
     )
-
 
 
 @rt("/add_record/{table_name}")
@@ -430,7 +435,7 @@ async def post(request: Request, table_name: str):
         Div(
         Label(
             "Add record",
-            cls="card bg-base-300 w-64 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
             hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
@@ -481,6 +486,7 @@ async def post(request: Request, table_name: str, record_id: int):
         )
     )
 
+
 @rt("/delete_record/{table_name}/{record_id}")
 def post(table_name: str, record_id: int):
     """Delete a specific record from a table"""
@@ -508,17 +514,6 @@ def post(table_name: str, record_id: int):
     )
 
 
-@rt("/api/tables/{table}")
-def get(table:str):
-    json_output = db.table(table).all()
-    return JSONResponse(json_output)
-
-@rt("/api/tables")
-def get():
-    json_output = list(db.tables())
-    return JSONResponse(json_output)
-
-
 @rt("/add_field")
 def post():
     return Label(
@@ -533,8 +528,11 @@ def post():
         id="field-label"
     )
 
+
 @rt("/remove_field")
 def post():
     return Div()
 
+
+# Start the server
 serve()
