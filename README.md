@@ -44,3 +44,12 @@ We welcome contributions from the community! If you'd like to contribute, please
 3. Commit your changes (`git commit -m 'Add some feature'`).
 4. Push to the branch (`git push origin feature/YourFeatureName`).
 5. Open a pull request.
+
+## 📋Features List
+
+- [x] Tables API
+- [ ] Records API
+- [ ] OAuth
+- [ ] Built-In Documentation
+- [ ] Storage
+- [ ] Migration to MongoDB
