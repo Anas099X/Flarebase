@@ -18,7 +18,7 @@ Flarebase is a lightweight and easy-to-use Backend-as-a-Service (BaaS) solution 
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/flarebase.git
+   git clone https://github.com/Anas099X/flarebase.git
    cd flarebase
 2. **Install Required Modules**
      ```bash
