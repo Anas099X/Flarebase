@@ -31,7 +31,7 @@ Flarebase is a lightweight and easy-to-use Backend-as-a-Service (BaaS) solution 
    python main.py
 4. **Access the UI**
 
-   Open your browser and navigate to http://localhost:5000 to access the Flarebase UI.
+   Open your browser and navigate to http://localhost:5001 to access the Flarebase UI.
 
 ## 📖 Documentation
 
