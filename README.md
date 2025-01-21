@@ -53,6 +53,7 @@ We welcome contributions from the community! If you'd like to contribute, please
 - [x] Tables API
 - [ ] Records API
 - [ ] OAuth
+- [ ] Built-In OAuth UI
 - [ ] Built-In Documentation
 - [ ] Storage
 - [ ] Migration to MongoDB
