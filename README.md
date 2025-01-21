@@ -2,11 +2,14 @@
 
 Flarebase is a lightweight and easy-to-use Backend-as-a-Service (BaaS) solution built with Python and powered by the FastHTML Framework. It provides a clean and intuitive user interface, making it simple to set up and manage your own database.
 
+![image](https://github.com/user-attachments/assets/3f0c5868-b98d-40ea-b302-a5876d246f28)
+
 ## 🌟 Features
 - **Simple UI**: Easy-to-navigate interface for managing your database.
 - **Fast Setup**: Get started quickly with minimal configuration.
 - **Lightweight**: Built with efficiency in mind, ensuring fast performance.
 - **Extensible**: Designed to be easily extended with additional features.
+
 
 ## 🛠️ Getting Started
 
