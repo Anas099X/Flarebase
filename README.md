@@ -57,3 +57,8 @@ We welcome contributions from the community! If you'd like to contribute, please
 - [ ] Built-In Documentation
 - [ ] Storage
 - [ ] Migration to MongoDB
+
+## Discord
+<td><a target="_blank" href="https://discord.gg/GuTRtB66qP"><img src="https://dcbadge.limes.pink/api/server/GuTRtB66qP" alt="" /></a></td>
+
+feel free to join the server for discussion!
