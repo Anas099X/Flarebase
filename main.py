@@ -4,7 +4,7 @@ from urllib.parse import parse_qs
 import secrets, json
 
 # Initialize FastHTML app and TinyDB database
-app = FastHTML(hdrs = (MarkdownJS(), HighlightJS(langs=['python', 'javascript', 'html', 'css']), ),exts='ws')
+app = FastHTML(exts='ws')
 rt = app.route
 
 db = TinyDB("flarebase.json")
@@ -237,9 +237,11 @@ def get():
         ),
         Head(
             Div(
-                Div(I(cls="ti ti-comet text-warning text-3xl"), " Flarebase", cls="text-lg text-warning font-bold"),
+                Div(I(cls="ti ti-comet text-4xl"), " Flarebase", cls="text-xl text-warning font-bold navbar-start"),
+                A(I(cls="ti ti-file-description-filled text-2xl"),cls="text-warning font-bold m-3 navbar-end", href="/docs/tables"),
                 cls="navbar bg-ghost"
             )
+            
         ),
         Body(
             Div(

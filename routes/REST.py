@@ -56,7 +56,7 @@ async def post(request: Request):
     
     # Redirect to the homepage
     return RedirectResponse("/", status_code=303)
-
+    
 
 # ----------- Delete Table --------------
 @rt("/api/tables/{table}")
