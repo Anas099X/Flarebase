@@ -4,8 +4,9 @@ from urllib.parse import parse_qs
 import secrets, json
 
 # Initialize FastHTML app and TinyDB database
-app = FastHTML(exts='ws')
+app = FastHTML(hdrs = (MarkdownJS(), HighlightJS(langs=['python', 'javascript', 'html', 'css']), ),exts='ws')
 rt = app.route
+
 db = TinyDB("flarebase.json")
 
 # Import REST routes (if needed)
@@ -271,6 +272,31 @@ def get():
     )
 
 
+@rt("/logo")
+def get():
+    return Div(
+        Header(
+            Link(
+                rel="stylesheet",
+                href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+            ),
+            Link(
+                href="https://cdn.jsdelivr.net/npm/daisyui@4.12.22/dist/full.min.css",
+                rel="stylesheet",
+                type="text/css"
+            ),
+            Script(src="https://cdn.tailwindcss.com")
+        ),
+    Div(
+        Div(
+           Div(I(cls="ti ti-comet text-warning text-8xl"), "Flarebase", cls="text-6xl text-warning font-bold"),
+            cls="max-w-md"
+        ),
+        cls="hero-content text-center"
+    ),
+    cls="hero bg-base-100 min-h-screen"
+)
+
 @rt("/view_table/{selected_table}")
 def post(selected_table: str):
     if not selected_table:
@@ -303,7 +329,7 @@ def post(selected_table: str):
                 Div(cls="ti ti-trash text-xl text-red-500 text-center"),
                 cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
                 hx_confirm="Are you sure you want to delete this record?",
-                hx_post=f"/delete_table/{selected_table}"
+                hx_delete=f"/api/tables/{selected_table}"
             ),
             cls="flex justify-center"
         )
@@ -443,7 +469,7 @@ async def post(request: Request, table_name: str):
         Label(
             Div(cls="ti ti-trash text-xl text-red-500 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
-            hx_post=f"/delete_table/{table_name}"
+            hx_delete=f"/api/tables/{table_name}"
         ),
         cls="flex justify-center"
         )
@@ -480,7 +506,7 @@ async def post(request: Request, table_name: str, record_id: int):
         Label(
             Div(cls="ti ti-trash text-xl text-red-500 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
-            hx_post=f"/delete_table/{table_name}"
+            hx_delete=f"/api/tables/{table_name}"
         ),
         cls="flex justify-center"
         )
@@ -507,7 +533,7 @@ def post(table_name: str, record_id: int):
         Label(
             Div(cls="ti ti-trash text-xl text-red-500 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
-            hx_post=f"/delete_table/{table_name}"
+            hx_delete=f"/api/tables/{table_name}"
         ),
         cls="flex justify-center"
         )
