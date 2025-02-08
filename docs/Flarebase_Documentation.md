@@ -173,8 +173,8 @@ Follow guidelines in the [README.md](README.md).
 
 ## Additional Documentation
 
-- **Records Documentation:** [docs/records.md](docs/records.md)
-- **Tables Documentation:** [docs/tables.md](docs/tables.md)
+- **Records Documentation:** [docs/records.md](/records.md)
+- **Tables Documentation:** [docs/tables.md](/tables.md)
 
 ---
 
