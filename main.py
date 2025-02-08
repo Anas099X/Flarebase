@@ -242,7 +242,7 @@ def get():
         Head(
             Div(
                 Div(I(cls="ti ti-comet text-4xl"), " Flarebase", cls="text-xl text-warning font-bold navbar-start"),
-                A(I(cls="ti ti-brand-github text-3xl"),cls="text-warning m-2 font-bold navbar-end", href="https://github.com/Anas099X/Flarebase/blob/main/docs/Flarebase_Documentation.md"),
+                Div(A(I(cls="ti ti-brand-github text-3xl"),href="https://github.com/Anas099X/Flarebase/blob/main/docs/Flarebase_Documentation.md"),cls="text-warning m-2 font-bold navbar-end"),
                 cls="navbar bg-ghost"
             )   
         ),
@@ -572,6 +572,65 @@ def post():
 def post():
     return Div()
 
+
+@rt('/landing')
+def get():
+    return Div(
+        Head(
+            Title("Flarebase - Landing Page"),
+            Link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/daisyui@4.12.22/dist/full.min.css"),
+            Link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css"),
+            Link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"),
+            # ...additional head elements...
+        ),
+        Body(
+            Div(
+                # Header with Flarebase text and icon tinted in warning color
+                Div(
+                    Div(I(cls="ti ti-comet text-6xl text-warning"), "Flarebase", cls="text-5xl font-bold text-warning"),
+                    P("Empowering you to build and manage lightweight backend systems effortlessly.", cls="text-xl mt-4"),
+                    cls="text-center my-8"
+                ),
+                # Descriptive section: convey project idea
+                Div(
+                    P("Flarebase is a lightweight Backend-as-a-Service designed to simplify database management. With an intuitive user interface and a powerful RESTful API, you can deploy, manage, and scale your projects with ease.",
+                      cls="max-w-2xl mx-auto text-center text-lg"),
+                    cls="my-8"
+                ),
+                # Hero cards for key benefits
+                Div(
+                    Div(
+                        Div(I(cls="ti ti-settings text-5xl text-warning")),
+                        H2("Simplicity", cls="text-2xl mt-2 font-bold"),
+                        P("Effortless setup and configuration."),
+                        cls="card shadow-md p-4 rounded-lg text-center"
+                    ),
+                    Div(
+                        Div(I(cls="ti ti-rocket text-5xl text-warning")),
+                        H2("Speed", cls="text-2xl mt-2 font-bold"),
+                        P("Fast performance with minimal overhead."),
+                        cls="card shadow-md p-4 rounded-lg text-center"
+                    ),
+                    Div(
+                        Div(I(cls="ti ti-currency-dollar text-5xl text-warning")),
+                        H2("Affordability", cls="text-2xl mt-2 font-bold"),
+                        P("Optimized resources at a low cost."),
+                        cls="card shadow-md p-4 rounded-lg text-center"
+                    ),
+                    cls="flex flex-col md:flex-row gap-6 justify-center my-8"
+                ),
+                # Call-to-Action buttons
+                Div(
+                    Button("Get Started", cls="btn btn-primary m-2", hx_get="/", hx_target="body"),
+                    Button("Documentation", cls="btn btn-secondary m-2", hx_get="/docs/Flarebase_Documentation", hx_target="body"),
+                    cls="flex justify-center"
+                ),
+                cls="container mx-auto p-4"
+            )
+        ),
+        data_theme="dim",
+        style="min-height:100vh;"
+    )
 
 # Start the server
 serve()
