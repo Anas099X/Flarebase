@@ -242,7 +242,7 @@ def get():
         Head(
             Div(
                 Div(I(cls="ti ti-comet text-4xl"), " Flarebase", cls="text-xl text-warning font-bold navbar-start"),
-                A(I(cls="ti ti-brand-github text-3xl"),cls="text-warning m-2 font-bold navbar-end", href="/docs/tables"),
+                A(I(cls="ti ti-brand-github text-3xl"),cls="text-warning m-2 font-bold navbar-end", href="https://github.com/Anas099X/Flarebase/blob/main/docs/Flarebase_Documentation.md"),
                 cls="navbar bg-ghost"
             )   
         ),

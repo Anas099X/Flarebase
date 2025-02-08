@@ -35,7 +35,7 @@ Flarebase is a lightweight and easy-to-use Backend-as-a-Service (BaaS) solution 
 
 ## 📖 Documentation
 
-For detailed documentation, including API references and advanced usage, please refer to the [Coming Soon]().
+For detailed documentation, including API references and advanced usage, please refer to the [Flarebase Documentation](https://github.com/Anas099X/Flarebase/blob/main/docs/Flarebase_Documentation.md).
 
 
 ## 🤝 Contributing
