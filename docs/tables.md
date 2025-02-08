@@ -4,10 +4,10 @@
 Tables are the basic structure for organizing data in Flarebase.
 
 ### REST API
-- **Create Table**: `POST /api/tables/create?name={table_name}&fields={field1,field2,...}`
+- **Create Table**: `POST /api/tables/create?name=table_name&fields=field1,field2,...`
 - **Get All Tables**: `GET /api/tables`
-- **Get Table Content**: `GET /api/tables/{table_name}`
-- **Delete Table**: `DELETE /api/tables/{table_name}`
+- **Get Table Content**: `GET /api/tables/table_name`
+- **Delete Table**: `DELETE /api/tables/table_name`
 
 ### Table Fields
 Each table can have multiple fields that define the structure of records:
@@ -16,18 +16,9 @@ Each table can have multiple fields that define the structure of records:
 - Fields cannot be renamed after creation (you'll need to create a new table)
 
 ### Example
-```json
-{
-  "users": {
-    "1": {"name": ""},
-    "2": {"email": ""},
-    "3": {"age": ""}
-  }
-}
 
-2. Create [docs/records.md](docs/records.md):
+```fields={"users": {"1": {"name": ""},"2": {"email": ""},"3": {"age": ""}}}```
 
-```md
 # Records Documentation
 
 ## Managing Records
@@ -44,14 +35,6 @@ Each record in a table:
 - Can be updated or deleted individually
 - Supports empty string values
 
-### Example Record
-```json
-{
-  "users": {
-    "4": {
-      "name": "Anas",
-      "email": "Anasshohdy400@gmail.com",
-      "age": "18"
-    }
-  }
-}
+### Example Record Data
+
+```{'field1': 'value1', 'field2': 'value2'}```

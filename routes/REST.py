@@ -26,6 +26,13 @@ def get():
     return JSONResponse(json_output)
 
 
+# ----------- Search Table ------------
+@rt("/api/tables/search/{table}/{field}/{input}")
+def get(table:str,field:str,input:str):
+
+    json_output = list(db.table(table).search(getattr(db_query, field) == input))
+    return JSONResponse(json_output)
+
 # ----------- Create Table --------------
 @rt("/api/tables/create")
 async def post(request: Request):
@@ -128,9 +135,22 @@ async def get(doc:str):
         doc_content = markdown.markdown(f.read())  # Convert Markdown to HTML
 
  html_header = '''
- <head>
+<head>
+    <!-- GitHub Markdown CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
- </head>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    
+    <!-- Load Prism JSON syntax -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+
+    <!-- Marked.js for parsing Markdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.0.0/marked.min.js"></script>
+</head>
+
+
   <style>
         h1 {
             color: #efd156;

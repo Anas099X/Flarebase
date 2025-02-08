@@ -8,6 +8,7 @@ app = FastHTML(exts='ws')
 rt = app.route
 
 db = TinyDB("flarebase.json")
+db_query = Query()
 
 # Import REST routes (if needed)
 from routes import REST
@@ -25,7 +26,7 @@ def list_tables():
             Button(
                 Div(key, cls="text-lg font-bold"),
                 Div("Table", cls="text-md"),
-                cls="card bg-base-300 w-48 mb-3 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
+                cls="card text-left bg-base-300 w-48 mb-3 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
                 hx_post=f"/view_table/{key}",
                 hx_target="#records",
                 hx_swap="innerHTML"
