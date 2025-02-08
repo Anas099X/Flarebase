@@ -6,35 +6,55 @@ Tables are the basic structure for organizing data in Flarebase.
 ### REST API
 - **Create Table**: `POST /api/tables/create?name=table_name&fields=field1,field2,...`
 - **Get All Tables**: `GET /api/tables`
-- **Get Table Content**: `GET /api/tables/table_name`
-- **Delete Table**: `DELETE /api/tables/table_name`
+- **Get Table Content**: `GET /api/tables/{table_name}`
+- **Delete Table**: `DELETE /api/tables/{table_name}`
+- **Search Table**: `GET /api/tables/search/{table}/{field}/{input}`
 
 ### Table Fields
 Each table can have multiple fields that define the structure of records:
 - Fields are created when the table is initialized
-- Each field starts empty with an empty string value ("")
 - Fields cannot be renamed after creation (you'll need to create a new table)
 
 ### Example
 
-```fields={"users": {"1": {"name": ""},"2": {"email": ""},"3": {"age": ""}}}```
+#### Creating a Table
 
-# Records Documentation
+```bash
+curl -X POST "http://localhost:5001/api/tables/create?name=users&fields=name,email,age"
+```
 
-## Managing Records
-Records are individual entries in tables that contain data for each defined field.
+#### Getting All Tables
 
-### REST API
-- **Create Record**: `POST /api/record/create?table={table_name}&record={record_data}`
-- **Delete Record**: `DELETE /api/record/delete?table={table_name}&record-id={id}`
+```bash
+curl -X GET "http://localhost:5001/api/tables"
+```
 
-### Record Structure
-Each record in a table:
-- Has a unique document ID
-- Contains values for the fields defined in the table
-- Can be updated or deleted individually
-- Supports empty string values
+#### Getting Table Content
 
-### Example Record Data
+```bash
+curl -X GET "http://localhost:5001/api/tables/users"
+```
 
-```{'field1': 'value1', 'field2': 'value2'}```
+#### Deleting a Table
+
+```bash
+curl -X DELETE "http://localhost:5001/api/tables/users"
+```
+
+#### Searching a Table
+
+```bash
+curl -X GET "http://localhost:5001/api/tables/search/users/name/John"
+```
+
+### Example Table Data
+
+```json
+{
+  "users": {
+    "1": {"name": "John", "email": "john@example.com", "age": "30"},
+    "2": {"name": "Jane", "email": "jane@example.com", "age": "25"}
+  }
+}
+```
+

@@ -46,15 +46,15 @@ async def post(request: Request):
     
     # Validate table name
     if not table_name:
-        return Div("Table name cannot be empty.", cls="text-red-500")
+        return Div("Table name cannot be empty.", cls="text-red-600")
     
     # Check if table already exists
     if table_name in db.tables():
-        return Div("Table already exists.", cls="text-red-500")
+        return Div("Table already exists.", cls="text-red-600")
     
     # Validate fields
     if not fields:
-        return Div("Fields cannot be empty.", cls="text-red-500")
+        return Div("Fields cannot be empty.", cls="text-red-600")
     
     # Create the table
     table = db.table(table_name)
@@ -85,12 +85,12 @@ async def post(request: Request):
     
     # Validate table name
     if not table_name:
-        return Div("Table name cannot be empty.", cls="text-red-500")
+        return Div("Table name cannot be empty.", cls="text-red-600")
     
     
     # Validate fields
     if not record:
-        return Div("Fields cannot be empty.", cls="text-red-500")
+        return Div("Fields cannot be empty.", cls="text-red-600")
     
     # add a record to table
     db.table(table_name).insert(record)
@@ -112,11 +112,11 @@ async def delete(request: Request):
     
     # Validate table name
     if not table_name:
-        return Div("Table name cannot be empty.", cls="text-red-500")
+        return Div("Table name cannot be empty.", cls="text-red-600")
     
     # Check if table already exists
     if table_name in db.tables():
-        return Div("Table already exists.", cls="text-red-500")
+        return Div("Table already exists.", cls="text-red-600")
     
     
     # add a record to table

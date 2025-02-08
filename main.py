@@ -10,7 +10,7 @@ rt = app.route
 db = TinyDB("flarebase.json")
 db_query = Query()
 
-# Import REST routes (if needed)
+# Import REST routes
 from routes import REST
 
 # ------------------------------
@@ -27,6 +27,7 @@ def list_tables():
                 Div(key, cls="text-lg font-bold"),
                 Div("Table", cls="text-md"),
                 cls="card text-left bg-base-300 w-48 mb-3 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 m-2",
+                style="border-radius: 0;",
                 hx_post=f"/view_table/{key}",
                 hx_target="#records",
                 hx_swap="innerHTML"
@@ -84,14 +85,14 @@ def list_records(table_input):
             Div(
                 Label(
                     I(cls="ti ti-edit text-xl"),
-                    cls="btn btn-sm btn-ghost btn-square",
+                    cls="btn btn-sm btn-ghost btn-square hover:bg-warning",
                     hx_post=f"/fetch_fields/{table_input}/update/{record.doc_id}",
                     hx_target="#record-form-fields",
                     **{"for": "add-record-drawer"}
                 ),
                 Button(
-                    I(cls="ti ti-trash text-xl text-red-500"),
-                    cls="btn btn-sm btn-ghost btn-square",
+                    I(cls="ti ti-trash text-xl text-red-600"),
+                    cls="btn btn-sm btn-ghost btn-square hover:bg-warning",
                     hx_post=f"/delete_record/{table_input}/{record.doc_id}",
                     hx_target="#records",
                     hx_confirm="Are you sure you want to delete this record?"
@@ -159,22 +160,24 @@ def get():
                                     cls="h-32 overflow-y-auto"
                                 ),
                                 Label(
-                                    "Add Field",
+                                    "Add field",
                                     type="button",
                                     hx_post="/add_field",
                                     hx_target="#fields",
                                     hx_swap="beforeend",
-                                    cls="card bg-base-300 w-full hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-3 text-lg font-bold"
+                                    cls="card bg-base-300 w-32 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-3 text-lg font-bold",
+                                    style="border-radius: 0;"
                                 ),
                                 cls="mb-4"
                             ),
                             Div(
                                 Label(
-                                    "Add Table",
+                                    "Add table",
                                     type="button",
                                     hx_post="/create_table",
                                     hx_include="#fields-inputs input",
-                                    cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center text-lg font-bold"
+                                    cls="card rounded-none bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center text-lg font-bold",
+                                    style="border-radius: 0;"
                                 ),
                                 cls="mt-12"
                             ),
@@ -239,10 +242,9 @@ def get():
         Head(
             Div(
                 Div(I(cls="ti ti-comet text-4xl"), " Flarebase", cls="text-xl text-warning font-bold navbar-start"),
-                A(I(cls="ti ti-file-description-filled text-2xl"),cls="text-warning font-bold m-3 navbar-end", href="/docs/tables"),
+                A(I(cls="ti ti-brand-github text-3xl"),cls="text-warning m-2 font-bold navbar-end", href="/docs/tables"),
                 cls="navbar bg-ghost"
-            )
-            
+            )   
         ),
         Body(
             Div(
@@ -256,8 +258,9 @@ def get():
                             cls="flex w-full max-w-6xl h-80"
                         ),
                         Label(
-                            "Add Table",
+                            "Add table",
                             cls="card bg-base-300 w-32 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center",
+                                style="border-radius: 0;",
                             **{"for": "add-key-drawer"}
                         ),
                         cls="card-body"
@@ -303,9 +306,9 @@ def get():
 @rt("/view_table/{selected_table}")
 def post(selected_table: str):
     if not selected_table:
-        return Div("No table selected.", cls="text-red-500")
+        return Div("No table selected.", cls="text-red-600")
     if selected_table not in db.tables():
-        return Div(f"Table '{selected_table}' does not exist.", cls="text-red-500")
+        return Div(f"Table '{selected_table}' does not exist.", cls="text-red-600")
 
     # Return both the records and update the "Add record" and "Delete table" buttons
     return Div(
@@ -323,15 +326,17 @@ def post(selected_table: str):
             Label(
                 "Add record",
                 cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+                style="border-radius: 0;",
                 hx_post=f"/fetch_fields/{selected_table}/add",
                 hx_target="#record-form-fields",
                 **{"for": "add-record-drawer"}
             ),
             # Delete table button
             Label(
-                Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+                Div(cls="ti ti-trash text-xl text-red-600 text-center"),
                 cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
-                hx_confirm="Are you sure you want to delete this record?",
+                style="border-radius: 0;",
+                hx_confirm="Are you sure you want to delete this table?",
                 hx_delete=f"/api/tables/{selected_table}"
             ),
             cls="flex justify-center"
@@ -351,17 +356,17 @@ async def post(request: Request):
     table_name = form.get("table-name")
     
     if not table_name:
-        return Div("Table name cannot be empty.", cls="text-red-500")
+        return Div("Table name cannot be empty.", cls="text-red-600")
     
     if table_name in db.tables():
-        return Div("Table already exists.", cls="text-red-500")
+        return Div("Table already exists.", cls="text-red-600")
     
     table = db.table(table_name)
     
     for key, value in form.items():
         if key != "table-name":
             if not value:
-                return Div("Fields cannot be empty.", cls="text-red-500")
+                return Div("Fields cannot be empty.", cls="text-red-600")
             else:
                 table.insert({value: ""})
     
@@ -372,7 +377,7 @@ async def post(request: Request):
 def post(table_name: str ,mode:str ,record_id:int = None):
     """Fetch and display fields for the selected table"""
     if table_name == "default" or table_name not in db.tables():
-        return Div("Please select a table first", cls="text-red-500")
+        return Div("Please select a table first", cls="text-red-600")
     
     fields = keys_list(table_name)
     table = db.table(table_name)
@@ -398,6 +403,7 @@ def post(table_name: str ,mode:str ,record_id:int = None):
             type="submit",
             hx_post=f"/add_record/{table_name}",
             hx_target="#records",
+            style="border-radius: 0;",
             cls="card bg-base-300 w-full hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-2"
         ),
         cls="p-4 bg-ghost rounded-lg"
@@ -435,7 +441,7 @@ def post(table_name: str ,mode:str ,record_id:int = None):
 async def post(request: Request, table_name: str):
     """Add a record to the specified table with dynamic fields"""
     if table_name not in db.tables():
-        return Div("Table not found", cls="text-red-500")
+        return Div("Table not found", cls="text-red-600")
     
     form = await request.form()
     
@@ -447,6 +453,7 @@ async def post(request: Request, table_name: str):
         Label(
             "Add record",
             cls="btn bg-black btn-outline w-64 mt-5 flex self-center",
+            style="border-radius: 0;",
             hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
@@ -465,12 +472,13 @@ async def post(request: Request, table_name: str):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            style="border-radius: 0;",
             hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
         Label(
-            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+            Div(cls="ti ti-trash text-xl text-red-600 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
             hx_delete=f"/api/tables/{table_name}"
         ),
@@ -483,7 +491,7 @@ async def post(request: Request, table_name: str):
 async def post(request: Request, table_name: str, record_id: int):
     """Add a record to the specified table with dynamic fields"""
     if table_name not in db.tables():
-        return Div("Table not found", cls="text-red-500")
+        return Div("Table not found", cls="text-red-600")
     
     form = await request.form()
     
@@ -502,12 +510,13 @@ async def post(request: Request, table_name: str, record_id: int):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black  border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            style="border-radius: 0;",
             hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
         Label(
-            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+            Div(cls="ti ti-trash text-xl text-red-600 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
             hx_delete=f"/api/tables/{table_name}"
         ),
@@ -529,12 +538,13 @@ def post(table_name: str, record_id: int):
         Label(
             "Add record",
             cls="card bg-base-300 w-64 hover:bg-warning hover:text-black border-2 border-black hover:translate-x-1 hover:translate-y-1 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-4 font-bold text-center mt-5",
+            style="border-radius: 0;",
             hx_post=f"/fetch_fields/{table_name}/add",
             hx_target="#record-form-fields",
             **{"for": "add-record-drawer"}
         ),
         Label(
-            Div(cls="ti ti-trash text-xl text-red-500 text-center"),
+            Div(cls="ti ti-trash text-xl text-red-600 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
             hx_delete=f"/api/tables/{table_name}"
         ),
@@ -551,7 +561,7 @@ def post():
             hx_post="/remove_field",
             hx_target="#field-label",
             hx_swap="delete",
-            cls="ti ti-file-x text-2xl text-red-500"
+            cls="ti ti-trash text-2xl text-red-600 m-1"
         ),
         cls="flex items-center mb-2",
         id="field-label"
