@@ -48,16 +48,6 @@ We welcome contributions from the community! If you'd like to contribute, please
 4. Push to the branch (`git push origin feature/YourFeatureName`).
 5. Open a pull request.
 
-## 📋Features List
-
-- [x] Tables API
-- [ ] Records API
-- [ ] OAuth
-- [ ] Built-In OAuth UI
-- [ ] Built-In Documentation
-- [ ] Storage
-- [ ] Migration to MongoDB
-
 ## Discord
 <td><a target="_blank" href="https://discord.gg/GuTRtB66qP"><img src="https://dcbadge.limes.pink/api/server/GuTRtB66qP" alt="" /></a></td>
 
