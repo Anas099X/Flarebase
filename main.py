@@ -120,7 +120,7 @@ def list_records(table_input):
     return Table(
         Thead(table_head),
         Tbody(*table_body),
-        cls="table-auto border-2 border-black w-full bg-base-300 shadow-[8px_8px_0px_rgba(0,0,0,1)]"
+        cls="table-auto border-2 border-black w-full bg-base-300 shadow-[8px_8px_0px_rgba(0,0,0,1)]",
     )
 
 
@@ -241,7 +241,7 @@ def get():
         ),
         Head(
             Div(
-                Div(I(cls="ti ti-comet text-4xl"), " Flarebase", cls="text-xl text-warning font-bold navbar-start"),
+                Div(I(cls="ti ti-comet text-4xl -translate-y-1"), " Flarebase", cls="text-xl text-warning font-bold navbar-start"),
                 Div(A(I(cls="ti ti-brand-github text-3xl"),href="https://github.com/Anas099X/Flarebase/blob/main/docs/Flarebase_Documentation.md"),cls="text-warning m-2 font-bold navbar-end"),
                 cls="navbar bg-ghost"
             )   
@@ -272,9 +272,9 @@ def get():
                 cls="container mx-auto py-6 px-4"
             ),
             data_theme="dim",
-            style="min-height:100vh;"
+            style="min-height:100vh;",
         ),
-        cls="bg-base-100"
+        cls="bg-base-100",
     )
 
 
@@ -300,6 +300,7 @@ def get():
         ),
         cls="hero-content text-center"
     ),
+    data_theme="dim",
     cls="hero bg-base-100 min-h-screen"
 )
 
@@ -466,7 +467,7 @@ async def post(request: Request, table_name: str):
     
     # Return updated table view
     return Div(
-        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center text-primary mb-3"),
         list_records(table_name),
         Div(
         Label(
@@ -480,6 +481,7 @@ async def post(request: Request, table_name: str):
         Label(
             Div(cls="ti ti-trash text-xl text-red-600 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
+            style="border-radius: 0;",
             hx_delete=f"/api/tables/{table_name}"
         ),
         cls="flex justify-center"
@@ -504,7 +506,7 @@ async def post(request: Request, table_name: str, record_id: int):
     
     # Return updated table view
     return Div(
-        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center text-primary mb-3"),
         list_records(table_name),
         Div(
         Label(
@@ -518,6 +520,7 @@ async def post(request: Request, table_name: str, record_id: int):
         Label(
             Div(cls="ti ti-trash text-xl text-red-600 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black  border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
+            style="border-radius: 0;",
             hx_delete=f"/api/tables/{table_name}"
         ),
         cls="flex justify-center"
@@ -532,7 +535,7 @@ def post(table_name: str, record_id: int):
     table.remove(doc_ids=[record_id])
     
     return Div(
-        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center mb-3"),
+        Div(Div("GET",cls="badge badge-warning mr-1"),f"/api/tables/{table_name}",cls="bg-base-300 w-full h-10  border-2 border-black shadow-md shadow-[3px_5px_0px_rgba(0,0,0,1)] p-1 font-bold text-center text-primary mb-3"),
         list_records(table_name),
         Div(
         Label(
@@ -546,6 +549,7 @@ def post(table_name: str, record_id: int):
         Label(
             Div(cls="ti ti-trash text-xl text-red-600 text-center"),
             cls="card bg-base-300 w-12 h-12 hover:bg-warning hover:text-black border-2 border-black translate-x-1 translate-y-1.5 hover:translate-x-2 hover:translate-y-2 shadow-md hover:shadow-[3px_5px_0px_rgba(0,0,0,1)] p-3 font-bold text-center mt-5 ml-1",
+            style="border-radius: 0;",
             hx_delete=f"/api/tables/{table_name}"
         ),
         cls="flex justify-center"
@@ -621,8 +625,8 @@ def get():
                 ),
                 # Call-to-Action buttons
                 Div(
-                    Button("Get Started", cls="btn btn-primary m-2", hx_get="/", hx_target="body"),
-                    Button("Documentation", cls="btn btn-secondary m-2", hx_get="/docs/Flarebase_Documentation", hx_target="body"),
+                    Button("Get Started", cls="btn btn-warning btn-outline m-2", hx_get="/", hx_target="body"),
+                    Button("Documentation", cls="btn btn-warning btn-outline m-2", hx_get="/docs/Flarebase_Documentation", hx_target="body"),
                     cls="flex justify-center"
                 ),
                 cls="container mx-auto p-4"
