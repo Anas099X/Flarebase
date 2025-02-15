@@ -7,7 +7,7 @@ import secrets, json
 app = FastHTML(exts='ws')
 rt = app.route
 
-db = TinyDB("/tmp/flarebase.json")
+db = TinyDB("flarebase_storage.json")
 db_query = Query()
 
 # Import REST routes
